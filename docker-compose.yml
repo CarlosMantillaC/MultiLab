@@ -2,6 +2,9 @@ services:
   laravel_app:
     build:
       context: .
+      args:
+          UID: ${UID}
+          GID: ${GID}
       dockerfile: Dockerfile
     container_name: laravel_app
     volumes:
@@ -16,6 +19,9 @@ services:
   scheduler:
       build:
           context: .
+          args:
+              UID: ${UID}
+              GID: ${GID}
           dockerfile: Dockerfile
       container_name: laravel_scheduler
       volumes:

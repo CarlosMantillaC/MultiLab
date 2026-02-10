@@ -1,52 +1,38 @@
-/.phpunit.cache
-/node_modules
+# Composer / Node
+/vendor/
+/node_modules/
+/composer.lock
+/package-lock.json
+/yarn.lock
+
+# Laravel env & keys
+.env
+.env.*.backup
+/storage/*.key
+
+# Laravel caches & logs
+/bootstrap/cache/
+/storage/framework/
+/storage/logs/
+/storage/app/
+
+# Public build / hot reload
 /public/build
 /public/hot
 /public/storage
-/storage/*.key
-bootstrap/cache/
-storage/logs/
-/vendor
-.env
-.env.backup
-.env.production
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
+
+# IDEs / editors
+/.idea/
+/.vscode/
+/.fleet/
+
+# PHPUnit
+/.phpunit.cache
+/.phpunit.result.cache
+
+# NPM / Yarn logs
 npm-debug.log
 yarn-error.log
-/.fleet
-/.idea
-/.vscode
-.npm /
-public/ClaragonwwwMultiLabstoragelogs/laravel.log
-/storage/*.key
-/storage/framework/*
-
-# Laravel caches/logs
-/storage/framework/
-/storage/logs/
-/bootstrap/cache/
-
-# Dependencias
-/vendor/
-/node_modules/
-
-# Basura rara de Windows en public (paths fantasma)
-public/C*/
-
-# Laravel caches/logs
-/storage/framework/
-/storage/logs/
-/bootstrap/cache/
-
-# Dependencias
-/vendor/
-/node_modules/
-
-# Basura rara de Windows en public (paths fantasma)
-public/C*/
 
 # Basura rara de Windows
 public/C*/

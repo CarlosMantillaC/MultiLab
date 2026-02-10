@@ -1,6 +1,14 @@
 FROM php:8.1-fpm
 
-# Dependencias del sistema
+# ----------------------------
+# Build arguments (ANTES)
+# ----------------------------
+ARG UID=1000
+ARG GID=1000
+
+# ----------------------------
+# System dependencies
+# ----------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
@@ -26,24 +34,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       zip \
   && rm -rf /var/lib/apt/lists/*
 
+# ----------------------------
+# Align www-data with host UID/GID
+# ----------------------------
+RUN usermod -u ${UID} www-data \
+ && groupmod -g ${GID} www-data
+
+# ----------------------------
 # Composer
+# ----------------------------
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Directorio de trabajo
+# ----------------------------
+# Workdir
+# ----------------------------
 WORKDIR /var/www
 
-# Copiar proyecto
-COPY . /var/www
+# ----------------------------
+# Entrypoint
+# ----------------------------
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Instalar dependencias
-RUN composer install \
-    --no-interaction \
-    --prefer-dist \
-    --optimize-autoloader \
-    --no-dev \
-    --no-scripts
-
-# Permisos
-RUN chown -R www-data:www-data /var/www
-
-USER www-data
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["php-fpm", "-F"]
