@@ -1,10 +1,8 @@
-FROM php:8.1-fpm
+FROM php:8.1-fpm AS base
 
-# Build arguments
 ARG UID=1000
 ARG GID=1000
 
-# System dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
@@ -17,7 +15,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2-dev \
     libzip-dev \
     libicu-dev \
-    default-mysql-client \
   && docker-php-ext-configure gd --with-freetype --with-jpeg \
   && docker-php-ext-install -j$(nproc) \
       pdo_mysql \
@@ -30,22 +27,51 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       zip \
   && rm -rf /var/lib/apt/lists/*
 
-# Align www-data with host UID/GID
-RUN usermod -u ${UID} www-data \
-    && groupmod -g ${GID} www-data
+RUN usermod -u ${UID} www-data && groupmod -g ${GID} www-data \
+    && mkdir -p /home/www-data && chown -R www-data:www-data /home/www-data
 
-# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-RUN mkdir -p /home/www-data && chown -R www-data:www-data /home/www-data /var/www
-
-# Entrypoint
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+FROM base AS dev
+
+RUN apt-get update && apt-get install -y nodejs npm \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+
 USER www-data
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["php-fpm", "-F"]
+
+FROM base AS prod
+
+COPY --chown=www-data:www-data . .
+
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-progress
+
+RUN apt-get update && apt-get install -y nodejs npm \
+    && npm install \
+    && npm run build \
+    && rm -rf node_modules \
+    && apt-get purge -y nodejs npm \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www/storage \
+    && chmod -R 755 /var/www/public
+
+USER www-data
+
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm", "-F"]
