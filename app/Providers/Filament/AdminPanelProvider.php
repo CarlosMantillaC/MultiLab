@@ -49,11 +49,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->brandLogo(asset('images/brand-horizontal.png'))
             ->brandName('Ingeniería de Software')
-            ->assets([
-                Css::make('filament-brand')->html(
-                    '<link href="' . asset('css/filament-brand.css') . '" rel="stylesheet" data-navigate-track />'
-                ),
-            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
