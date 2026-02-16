@@ -18,8 +18,14 @@ until php artisan db:monitor > /dev/null 2>&1; do
   sleep 2
 done
 
-php artisan migrate --force
-php artisan db:seed --class=AdminSeeder --force
+if [ "$1" = "php-fpm" ]; then
+    php artisan migrate --force
+    php artisan db:seed --class=AdminSeeder --force
+    php artisan db:seed --class=RoleSeeder --force
+    php artisan db:seed --class=ComputerSeeder --force
+    php artisan db:seed --class=UnitSeeder --force
+    php artisan db:seed --class=CategorySeeder --force
+fi
 
 if [ "$APP_ENV" = "production" ]; then
     php artisan config:cache
