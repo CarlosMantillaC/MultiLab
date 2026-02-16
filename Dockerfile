@@ -71,7 +71,5 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/public
 
-USER www-data
-
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm", "-F"]

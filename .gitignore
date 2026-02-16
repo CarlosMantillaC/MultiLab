@@ -20,6 +20,7 @@
 /public/build
 /public/hot
 /public/storage
+/public_shared/
 
 # IDEs / editors
 /.idea/

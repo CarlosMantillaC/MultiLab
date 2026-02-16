@@ -89,7 +89,8 @@ services:
             context: .
             target: prod
         volumes:
-            - code_data:/var/www
+            - storage_data:/var/www/storage
+            - public_data:/var/www/public_shared
         depends_on:
             - mysql
         profiles: ["prod"]
@@ -101,7 +102,7 @@ services:
             - "80:80"
         volumes:
             - ./docker/nginx/prod.conf:/etc/nginx/conf.d/default.conf
-            - code_data:/var/www:ro
+            - public_data:/var/www/public:ro
         depends_on:
             - laravel_prod
         networks:
@@ -114,4 +115,5 @@ networks:
 
 volumes:
     mysql_data:
-    code_data:
+    storage_data:
+    public_data:
